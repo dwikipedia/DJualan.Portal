@@ -1,0 +1,12 @@
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\bin\Debug\net8.0\DJualan.Core.deps.json
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\bin\Debug\net8.0\DJualan.Core.dll
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\bin\Debug\net8.0\DJualan.Core.pdb
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.AssemblyInfoInputs.cache
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.AssemblyInfo.cs
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.csproj.CoreCompileInputs.cache
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.sourcelink.json
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.dll
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\refint\DJualan.Core.dll
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\DJualan.Core.pdb
+C:\Users\DIKHWAN\source\repos\DJualan.Portal\DJualan.Core\obj\Debug\net8.0\ref\DJualan.Core.dll

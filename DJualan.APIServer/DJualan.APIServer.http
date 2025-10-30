@@ -1,0 +1,6 @@
+@DJualan.APIServer_HostAddress = http://localhost:5296
+
+GET {{DJualan.APIServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
