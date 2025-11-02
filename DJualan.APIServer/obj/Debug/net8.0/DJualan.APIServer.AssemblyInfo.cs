@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DJualan.APIServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9943aa3c14595884e42de50aec868ba5f65b0c03")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f6f10ba77509a333b88e7cd3301465d774f6b07")]
 [assembly: System.Reflection.AssemblyProductAttribute("DJualan.APIServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DJualan.APIServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
