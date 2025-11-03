@@ -10,6 +10,7 @@ namespace DJualan.Service.Mappings
         {
             // Product mappings
             CreateMap<ProductCreateRequest, Product>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
