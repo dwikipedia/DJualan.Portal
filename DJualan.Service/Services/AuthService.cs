@@ -1,7 +1,9 @@
 ﻿using DJualan.Core.DTOs.Auth;
 using DJualan.Core.Interfaces;
+using DJualan.Service.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,13 +14,13 @@ namespace DJualan.Service.Services
     public class AuthService
     {
         private readonly IAuthRepository _repo;
-        private readonly IConfiguration _config;
+        private readonly JwtSettings _jwtSettings;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IAuthRepository repo, IConfiguration config, ILogger<AuthService> logger)
+        public AuthService(IAuthRepository repo, IOptions<JwtSettings> jwtOptions, ILogger<AuthService> logger)
         {
             _repo = repo;
-            _config = config;
+            _jwtSettings = jwtOptions.Value;
             _logger = logger;
         }
 
@@ -34,18 +36,22 @@ namespace DJualan.Service.Services
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+            var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
+
+            var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenLifetimeMinutes);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("userId", user.Id.ToString())
+            };
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(60),
-                Issuer = _config["Jwt:Issuer"],
-                Audience = _config["Jwt:Audience"],
+                Subject = new ClaimsIdentity(claims),
+                Expires = expiration,
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
@@ -54,7 +60,11 @@ namespace DJualan.Service.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var jwt = tokenHandler.WriteToken(token);
 
-            _logger.LogInformation("User {Username} authenticated successfully", request.Username);
+            _logger.LogInformation(
+               "User {Username} authenticated successfully (token valid {Lifetime} min, expires {Expiration})",
+               request.Username,
+               _jwtSettings.TokenLifetimeMinutes,
+               expiration);
 
             return new LoginResponse
             {

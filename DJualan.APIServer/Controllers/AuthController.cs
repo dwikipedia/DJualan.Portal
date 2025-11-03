@@ -1,4 +1,5 @@
 ﻿using DJualan.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AuthDTO = DJualan.Core.DTOs.Auth;
 
@@ -16,6 +17,14 @@ namespace DJualan.APIServer.Controllers
             _authService = authService;
             _logger = logger;
         }
+
+        [HttpGet("debug-claims")]
+        [Authorize]
+        public IActionResult GetClaims()
+        {
+            return Ok(User.Claims.Select(c => new { c.Type, c.Value }));
+        }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthDTO.LoginRequest request)

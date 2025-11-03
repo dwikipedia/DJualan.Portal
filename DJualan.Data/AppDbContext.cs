@@ -1,4 +1,5 @@
-﻿using DJualan.Core.Models;
+﻿using DJualan.Core.Interfaces.Base;
+using DJualan.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DJualan.Data
@@ -27,6 +28,25 @@ namespace DJualan.Data
                 .HasMaxLength(255);
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker
+                .Entries<IAuditableEntity>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            var now = DateTime.UtcNow;
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                    entry.Entity.CreatedAt = now;
+
+                entry.Entity.UpdatedAt = now;
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

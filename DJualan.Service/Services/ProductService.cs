@@ -1,4 +1,6 @@
-﻿using DJualan.Core.Interfaces;
+﻿using AutoMapper;
+using DJualan.Core.DTOs.Product;
+using DJualan.Core.Interfaces;
 using DJualan.Core.Models;
 
 namespace DJualan.Service.Services
@@ -6,10 +8,12 @@ namespace DJualan.Service.Services
     public class ProductService
     {
         private readonly IProductRepository _repository;
+        private readonly IMapper _mapper;
 
-        public ProductService(IProductRepository repository)
+        public ProductService(IProductRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
@@ -22,10 +26,11 @@ namespace DJualan.Service.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<Product> CreateAsync(Product product)
+        public async Task<ProductResponse> CreateAsync(ProductCreateRequest request)
         {
-            product.CreatedAt = DateTime.UtcNow;
-            return await _repository.AddAsync(product);
+            var product = _mapper.Map<Product>(request);
+            var created = await _repository.AddAsync(product);
+            return _mapper.Map<ProductResponse>(created);
         }
 
         public async Task<Product?> UpdateAsync(int id, Product product)

@@ -1,4 +1,5 @@
-﻿using DJualan.Core.Models;
+﻿using DJualan.Core.DTOs.Product;
+using DJualan.Core.Models;
 
 namespace DJualan.Core.Interfaces
 {

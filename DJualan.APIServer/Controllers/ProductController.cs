@@ -1,14 +1,14 @@
-﻿using DJualan.Core.Models;
-using DJualan.Data;
+﻿using DJualan.Core.DTOs.Product;
+using DJualan.Core.Models;
 using DJualan.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DJualan.APIServer.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class ProductController : ControllerBase
     {
         private readonly ProductService _service;
@@ -29,9 +29,12 @@ namespace DJualan.APIServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Product product)
+        public async Task<IActionResult> Create([FromBody] ProductCreateRequest request)
         {
-            var created = await _service.CreateAsync(product);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _service.CreateAsync(request);
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
 
