@@ -1,1 +1,98 @@
-**/.vs/
+# =========================================
+# ✅ DJualan Portal - .NET / Visual Studio .gitignore
+# =========================================
+
+# IDE folders
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+out/
+publish/
+artifacts/
+TestResults/
+**/bin/
+**/obj/
+**/out/
+**/publish/
+**/TestResults/
+
+# Logs
+Logs/
+**/Logs/
+*.log
+
+# Build outputs of specific tools
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.dll
+*.exe
+*.cache
+*.tlog
+
+# Debug / Release folders
+**/Debug/
+**/Release/
+*.FileListAbsolute.txt
+
+# ASP.NET & web
+App_Data/
+wwwroot/lib/
+node_modules/
+bower_components/
+
+# Configuration & secrets
+appsettings.*.local.json
+appsettings.Development.json
+secrets.json
+
+# Packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+project.lock.json
+
+# Publish profiles
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+
+# Database & local dev
+*.mdf
+*.ldf
+*.dbmdl
+*.bak
+*.sql
+*.sqlite
+
+# JetBrains Rider
+.idea/
+
+# VS Code
+.vscode/
+.history/
+
+# Misc
+*.tmp
+*.bak
+*.zip
+*.7z
+*.tar
+*.gz
+*.DS_Store
+Thumbs.db
