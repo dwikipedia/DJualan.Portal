@@ -1,5 +1,6 @@
 ﻿using DJualan.Core.DTOs.Product;
 using DJualan.Core.Models;
+using DJualan.Service.Interfaces;
 using DJualan.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,9 +13,9 @@ namespace DJualan.APIServer.Controllers
     [Authorize(Roles = "Admin")]
     public class ProductController : ControllerBase
     {
-        private readonly ProductService _service;
+        private readonly IProductService _service;
 
-        public ProductController(ProductService service)
+        public ProductController(IProductService service)
         {
             _service = service;
         }
@@ -53,17 +54,53 @@ namespace DJualan.APIServer.Controllers
             return deleted ? Ok() : NotFound();
         }
 
+        /// <summary>
+        /// Partially update a product using JSON Patch format
+        /// </summary>
+        /// <param name="id">Product ID</param>
+        /// <param name="patchDoc">JSON Patch operations array</param>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        /// PATCH /api/Product/1
+        /// [
+        ///   {
+        ///     "op": "replace",
+        ///     "path": "/name",
+        ///     "value": "New Product Name"
+        ///   },
+        ///   {
+        ///     "op": "replace", 
+        ///     "path": "/price",
+        ///     "value": 99.99
+        ///   }
+        /// ]
+        /// </remarks>
+        /// <response code="200">Returns the updated product</response>
+        /// <response code="400">If the patch document is invalid</response>
+        /// <response code="404">If the product is not found</response>
         [HttpPatch("{id}")]
+        [Consumes("application/json-patch+json")]
         [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<ProductPatchRequest> patchDoc)
         {
             if (patchDoc == null)
-                return BadRequest();
+                return BadRequest(new { message = "Patch document is required" });
 
-            var patched = await _service.PatchAsync(id, patchDoc);
-            return patched == null ? NotFound() : Ok(patched);
+            if (patchDoc.Operations.Count == 0)
+                return BadRequest(new { message = "No patch operations provided" });
+
+            try
+            {
+                var patched = await _service.PatchAsync(id, patchDoc);
+                return patched == null ? NotFound() : Ok(patched);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
