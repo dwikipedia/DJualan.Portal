@@ -1,45 +1,162 @@
 ﻿using DJualan.Core.Interfaces;
 using DJualan.Core.Models;
+using DJualan.Data.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DJualan.Data.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : BaseRepository<Product, int>, IProductRepository
     {
-        private readonly AppDbContext _context;
-
-        public ProductRepository(AppDbContext context)
+        public ProductRepository(AppDbContext context, ILogger<ProductRepository> logger)
+            : base(context, logger)
         {
-            _context = context;
+        }
+        public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
+        {
+            try
+            {
+                _logger.LogDebug("Getting products by category: {Category}", category);
+                return await _dbSet
+                    .Where(p => p.Category == category && p.IsActive)
+                    .OrderBy(p => p.Name)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting products by category: {Category}", category);
+                throw;
+            }
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
-            => await _context.Products.OrderByDescending(p => p.CreatedAt).ToListAsync();
-
-        public async Task<Product?> GetByIdAsync(int id)
-            => await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
-
-        public async Task<Product> AddAsync(Product product)
+        public async Task<IEnumerable<Product>> GetActiveProductsAsync()
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            return product;
+            try
+            {
+                _logger.LogDebug("Getting all active products");
+                return await _dbSet
+                    .Where(p => p.IsActive)
+                    .OrderBy(p => p.Name)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting active products");
+                throw;
+            }
         }
 
-        public async Task<Product> UpdateAsync(Product product)
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm)
         {
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync();
-            return product;
+            try
+            {
+                _logger.LogDebug("Searching products with term: {SearchTerm}", searchTerm);
+
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                    return await GetActiveProductsAsync();
+
+                return await _dbSet
+                    .Where(p => p.IsActive &&
+                               (p.Name.Contains(searchTerm) ||
+                                p.Description.Contains(searchTerm) ||
+                                p.Category.Contains(searchTerm)))
+                    .OrderBy(p => p.Name)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching products with term: {SearchTerm}", searchTerm);
+                throw;
+            }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null) return false;
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _logger.LogDebug("Getting products by price range: {MinPrice} - {MaxPrice}", minPrice, maxPrice);
+                return await _dbSet
+                    .Where(p => p.IsActive && p.Price >= minPrice && p.Price <= maxPrice)
+                    .OrderBy(p => p.Price)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting products by price range: {MinPrice} - {MaxPrice}", minPrice, maxPrice);
+                throw;
+            }
+        }
+
+        public async Task<bool> ProductExistsAsync(string productName)
+        {
+            try
+            {
+                _logger.LogDebug("Checking if product exists: {ProductName}", productName);
+                return await _dbSet
+                    .AnyAsync(p => p.Name.ToLower() == productName.ToLower());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking if product exists: {ProductName}", productName);
+                throw;
+            }
+        }
+
+        public async Task UpdateStockAsync(int productId, int newStock)
+        {
+            try
+            {
+                _logger.LogDebug("Updating stock for product ID: {ProductId} to {NewStock}", productId, newStock);
+
+                var product = await GetByIdAsync(productId);
+                if (product == null)
+                {
+                    throw new ArgumentException($"Product with ID {productId} not found.");
+                }
+
+                product.Stock = newStock;
+                product.UpdatedAt = DateTime.UtcNow;
+
+                await UpdateAsync(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating stock for product ID: {ProductId}", productId);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<string>> GetCategoriesAsync()
+        {
+            try
+            {
+                _logger.LogDebug("Getting all product categories");
+                return await _dbSet
+                    .Where(p => p.IsActive).Select(p => p.Category).Distinct().OrderBy(c => c).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting product categories");
+                throw;
+            }
+        }
+
+        // Override GetAllAsync to include custom ordering/filtering
+        public override async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            try
+            {
+                _logger.LogDebug("Getting all products with custom ordering");
+                return await _dbSet
+                    .OrderBy(p => p.Category)
+                    .ThenBy(p => p.Name)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all products");
+                throw;
+            }
         }
     }
 }

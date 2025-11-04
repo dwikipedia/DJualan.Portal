@@ -18,14 +18,6 @@ namespace DJualan.APIServer.Controllers
             _logger = logger;
         }
 
-        [HttpGet("debug-claims")]
-        [Authorize]
-        public IActionResult GetClaims()
-        {
-            return Ok(User.Claims.Select(c => new { c.Type, c.Value }));
-        }
-
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthDTO.LoginRequest request)
         {

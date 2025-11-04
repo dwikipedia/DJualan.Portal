@@ -1,4 +1,4 @@
-﻿using DJualan.Core.Interfaces.Base;
+﻿using DJualan.Core.Entities.Base;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,11 +6,8 @@ using System.Text.Json.Serialization;
 
 namespace DJualan.Core.Models
 {
-    public class Product : IAuditableEntity
+    public class Product : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Nama produk wajib diisi")]
         [MaxLength(150)]
         public string Name { get; set; } = string.Empty;

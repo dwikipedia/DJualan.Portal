@@ -16,7 +16,7 @@ namespace DJualan.Tests.AutoMapper
         {
             _config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<AutoMapperProfile>();
+                cfg.AddProfile<ProductProfile>();
             });
 
             _mapper = _config.CreateMapper();

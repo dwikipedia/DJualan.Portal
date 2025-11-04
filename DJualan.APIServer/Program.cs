@@ -1,4 +1,5 @@
 using DJualan.Data;
+using DJualan.Data.Extensions;
 using DJualan.Service.Extensions;
 using DJualan.Service.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,7 +12,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAutoMapper(typeof(DJualan.Service.Mappings.AutoMapperProfile));
+builder.Services.AddDataLayer();
+builder.Services.AddServiceLayer();
+builder.Services.AddAutoMapperProfiles();
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>

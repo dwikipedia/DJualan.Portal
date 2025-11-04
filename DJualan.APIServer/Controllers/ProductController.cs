@@ -2,6 +2,7 @@
 using DJualan.Core.Models;
 using DJualan.Service.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DJualan.APIServer.Controllers
@@ -39,7 +40,7 @@ namespace DJualan.APIServer.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Product product)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateRequest product)
         {
             var updated = await _service.UpdateAsync(id, product);
             return updated == null ? NotFound() : Ok(updated);
@@ -50,6 +51,19 @@ namespace DJualan.APIServer.Controllers
         {
             var deleted = await _service.DeleteAsync(id);
             return deleted ? Ok() : NotFound();
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<ProductPatchRequest> patchDoc)
+        {
+            if (patchDoc == null)
+                return BadRequest();
+
+            var patched = await _service.PatchAsync(id, patchDoc);
+            return patched == null ? NotFound() : Ok(patched);
         }
     }
 }

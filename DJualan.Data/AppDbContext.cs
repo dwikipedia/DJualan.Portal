@@ -1,4 +1,5 @@
-﻿using DJualan.Core.Interfaces.Base;
+﻿using DJualan.Core.Entities.Base;
+using DJualan.Core.Interfaces.Base;
 using DJualan.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,22 +29,49 @@ namespace DJualan.Data
                 .HasMaxLength(255);
 
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
+                entity.Property(p => p.Description).HasMaxLength(1000);
+                entity.Property(p => p.Price).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.Category).HasMaxLength(100);
+                entity.Property(p => p.ImageUrl).HasMaxLength(500);
+
+                entity.HasIndex(p => p.Category);
+                entity.HasIndex(p => p.IsActive);
+            });
+
+            // Configure base entity properties
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes()
+                .Where(e => typeof(BaseEntity).IsAssignableFrom(e.ClrType)))
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property("CreatedAt")
+                    .HasDefaultValueSql("GETUTCDATE()");
+
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property("UpdatedAt")
+                    .HasDefaultValueSql("GETUTCDATE()");
+            }
         }
+
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var entries = ChangeTracker
-                .Entries<IAuditableEntity>()
-                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is BaseEntity &&
+                           (e.State == EntityState.Added || e.State == EntityState.Modified));
 
-            var now = DateTime.UtcNow;
-
-            foreach (var entry in entries)
+            foreach (var entityEntry in entries)
             {
-                if (entry.State == EntityState.Added)
-                    entry.Entity.CreatedAt = now;
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((BaseEntity)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
+                }
 
-                entry.Entity.UpdatedAt = now;
+                ((BaseEntity)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
             }
 
             return await base.SaveChangesAsync(cancellationToken);
