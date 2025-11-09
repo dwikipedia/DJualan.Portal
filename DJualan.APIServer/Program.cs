@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     options.IncludeXmlComments(xmlPath);
-    options.OperationFilter<JsonPatchDocumentFilter>(); 
+    options.OperationFilter<JsonPatchDocumentFilter>();
 
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
@@ -95,11 +95,20 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy => policy
-            .WithOrigins("http://localhost:5173") // domain React kamu
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+    options.AddPolicy("AllowAngularApp",
+        policy =>
+        {
+            policy.WithOrigins(
+                    "http://localhost:4200",
+                    "https://localhost:4200",
+                    "http://localhost:4201",
+                    "https://localhost:4201"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .WithExposedHeaders("Content-Disposition"); // If you need to expose specific headers
+        });
 });
 
 var app = builder.Build();
@@ -109,9 +118,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("AllowAngularApp"); // or "AllowAll" for development
+}
+else
+{
+    app.UseCors("AllowAngularApp"); // More restrictive in production
 }
 
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
 
