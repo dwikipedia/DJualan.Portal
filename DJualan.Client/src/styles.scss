@@ -1,0 +1,83 @@
+// src/styles.scss
+/* Azure Color Theme */
+:root {
+  --azure-primary: #0078D4;
+  --azure-primary-light: #50B0F0;
+  --azure-primary-dark: #106EBE;
+  --azure-secondary: #00BCF2;
+  --azure-accent: #0099BC;
+  --azure-background: #F0F8FF;
+  --azure-surface: #FFFFFF;
+  --azure-text: #323130;
+  --azure-text-light: #605E5C;
+  --azure-border: #D2D0CE;
+  --azure-success: #107C10;
+  --azure-warning: #D83B01;
+  --azure-error: #D13438;
+  --azure-gradient: linear-gradient(135deg, #0078D4 0%, #00BCF2 100%);
+  --azure-gradient-light: linear-gradient(135deg, #50B0F0 0%, #6BDAFF 100%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--azure-text);
+  background-color: var(--azure-background);
+}
+
+/* Global Button Styles */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--azure-gradient);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: var(--azure-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.4);
+  }
+}
+
+.btn-secondary {
+  background: var(--azure-surface);
+  color: var(--azure-primary);
+  border: 2px solid var(--azure-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--azure-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }

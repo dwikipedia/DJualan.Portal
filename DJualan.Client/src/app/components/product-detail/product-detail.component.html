@@ -1,0 +1,188 @@
+<div class="product-detail-container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/products" class="breadcrumb-link">Products</a>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current" *ngIf="product">{{ product.name }}</span>
+  </nav>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading product details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Product Not Found</h3>
+    <p>{{ error }}</p>
+    <button (click)="goBack()" class="btn btn-primary">Back to Products</button>
+  </div>
+
+  <!-- Product Detail -->
+  <div *ngIf="product && !loading" class="product-detail">
+    <div class="product-layout">
+      <!-- Image Gallery -->
+      <div class="image-section">
+        <div class="main-image">
+          <img [src]="selectedImage" [alt]="product.name" (error)="selectedImage = 'https://via.placeholder.com/500x500/0078D4/ffffff?text=No+Image'">
+        </div>
+        <div class="image-thumbnails" *ngIf="product.imageUrl">
+          <div class="thumbnail" 
+               [class.active]="selectedImage === product.imageUrl"
+               (click)="selectedImage = product.imageUrl">
+            <img [src]="product.imageUrl" [alt]="product.name + ' thumbnail'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="info-section">
+        <h1 class="product-title">{{ product.name }}</h1>
+        
+        <div class="product-rating">
+          <div class="stars">
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+            <span class="rating-text">4.5 (128 reviews)</span>
+          </div>
+        </div>
+
+        <div class="price-section">
+          <span class="current-price">{{ product.priceInRp || formatPrice(product.price) }}</span>
+          <span *ngIf="product.price > 200000" class="original-price">
+            {{ formatPrice(product.price * 1.2) }}
+          </span>
+          <span *ngIf="product.price > 200000" class="discount-badge">Save 20%</span>
+        </div>
+
+        <div class="stock-info">
+          <span class="stock-status" [class]="getStockStatusClass()">
+            {{ getStockStatus() }}
+          </span>
+        </div>
+
+        <div class="product-description">
+          <h3>Description</h3>
+          <p>{{ product.description }}</p>
+        </div>
+
+        <div class="product-features">
+          <h3>Features</h3>
+          <ul>
+            <li>High quality materials</li>
+            <li>Fast shipping available</li>
+            <li>30-day return policy</li>
+            <li>Customer support included</li>
+          </ul>
+        </div>
+
+        <!-- Add to Cart Section -->
+        <div class="purchase-section" *ngIf="product.stock > 0 && product.isActive">
+          <div class="quantity-selector">
+            <label for="quantity">Quantity:</label>
+            <div class="quantity-controls">
+              <button (click)="decrementQuantity()" 
+                      [disabled]="currentQuantity <= 1" 
+                      class="quantity-btn">-</button>
+              <input 
+                type="number" 
+                id="quantity"
+                [formControl]="quantityControl"
+                min="1" 
+                [max]="product.stock"
+                class="quantity-input"
+              >
+              <button (click)="incrementQuantity()" 
+                      [disabled]="currentQuantity >= product.stock" 
+                      class="quantity-btn">+</button>
+            </div>
+            <div *ngIf="quantityControl.invalid && quantityControl.touched" class="error-message">
+              <span *ngIf="quantityControl.errors?.['min']">Quantity must be at least 1</span>
+              <span *ngIf="quantityControl.errors?.['max']">Quantity cannot exceed available stock</span>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button (click)="addToCart()" 
+                    [disabled]="!productForm.valid"
+                    class="btn btn-primary btn-large">
+              <span class="btn-icon">🛒</span>
+              Add to Cart
+            </button>
+            <button class="btn btn-secondary btn-large">
+              <span class="btn-icon">❤️</span>
+              Add to Wishlist
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="product.stock === 0 || !product.isActive" class="out-of-stock-section">
+          <p class="out-of-stock-message">This product is currently unavailable</p>
+          <button (click)="goBack()" class="btn btn-secondary">Continue Shopping</button>
+        </div>
+      </div>
+
+      <!-- Purchase Card -->
+      <div class="purchase-card" *ngIf="product.stock > 0 && product.isActive">
+        <div class="card-content">
+          <div class="price-card">
+            <span class="price">{{ product.priceInRp || formatPrice(product.price) }}</span>
+            <div class="delivery-info">
+              <span class="free-delivery">FREE delivery</span>
+              <span class="delivery-date">Get it by tomorrow</span>
+            </div>
+          </div>
+
+          <div class="stock-status-card" [class]="getStockStatusClass()">
+            {{ getStockStatus() }}
+          </div>
+
+          <div class="quantity-card">
+            <label>Quantity:</label>
+            <div class="quantity-controls-small">
+              <button (click)="decrementQuantity()" 
+                      [disabled]="currentQuantity <= 1" 
+                      class="quantity-btn">-</button>
+              <span class="quantity-display">{{ currentQuantity }}</span>
+              <button (click)="incrementQuantity()" 
+                      [disabled]="currentQuantity >= product.stock" 
+                      class="quantity-btn">+</button>
+            </div>
+          </div>
+
+          <div class="action-buttons-card">
+            <button (click)="addToCart()" 
+                    [disabled]="!productForm.valid"
+                    class="btn btn-primary btn-full">
+              Add to Cart
+            </button>
+            <button class="btn btn-secondary btn-full">
+              Buy Now
+            </button>
+          </div>
+
+          <div class="security-info">
+            <div class="secure-transaction">
+              <span class="lock-icon">🔒</span>
+              Secure transaction
+            </div>
+          </div>
+
+          <div class="shipping-info">
+            <div class="shipping-option">
+              <strong>Delivery:</strong> Jakarta, Indonesia
+            </div>
+            <div class="shipping-option">
+              <strong>Shipping:</strong> FREE
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

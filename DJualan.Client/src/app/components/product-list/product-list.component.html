@@ -1,0 +1,77 @@
+<div class="product-list">
+  <h2>Discover Amazing Products</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading amazing products for you...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadProducts()" class="retry-btn">Try Again</button>
+  </div>
+
+  <!-- Products Grid -->
+  <div *ngIf="!loading && !error" class="products-grid">
+    <div *ngFor="let product of products" class="product-card" [class.inactive]="!product.isActive">
+      
+      <!-- Product Image -->
+      <div class="product-image">
+        <img [src]="product.imageUrl" [alt]="product.name" 
+             (error)="product.imageUrl = 'https://via.placeholder.com/300x200/667eea/ffffff?text=No+Image'">
+        
+        <!-- Badges -->
+        <div *ngIf="!product.isActive" class="inactive-badge">Inactive</div>
+        <div *ngIf="product.stock === 0" class="out-of-stock-badge">Out of Stock</div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-category">{{ product.category }}</p>
+        <p class="product-description">{{ product.description }}</p>
+        
+        <div class="product-meta">
+          <span class="product-price">{{ product.priceInRp || formatPrice(product.price) }}</span>
+          <span class="product-stock" 
+                [class.in-stock]="product.stock > 10"
+                [class.low-stock]="product.stock > 0 && product.stock <= 10"
+                [class.out-of-stock]="product.stock === 0">
+            {{ product.stock === 0 ? 'Out of Stock' : 
+               product.stock <= 10 ? 'Low Stock' : 'In Stock' }}
+          </span>
+        </div>
+        
+        <div class="product-actions">
+          <button class="btn-primary" 
+                  [disabled]="product.stock === 0 || !product.isActive">
+            {{ product.stock === 0 ? 'Out of Stock' : 'Add to Cart' }}
+          </button>
+          <!-- Make sure this is a button with routerLink -->
+          <button class="btn-secondary" [routerLink]="['/products', product.id]">
+            View Details
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && products.length === 0" class="empty-state">
+    <div class="empty-icon">📦</div>
+    <p>No products available at the moment.</p>
+    <p class="mt-2">Check back later for new arrivals!</p>
+  </div>
+</div>
+
+<!-- Add this to your product-list.component.html -->
+<div *ngIf="!isLoggedIn && !loading" class="login-prompt">
+  <div class="prompt-card">
+    <h3>Authentication Required</h3>
+    <p>Please log in to view our products</p>
+    <button (click)="navigateToLogin()" class="btn btn-primary">Login Now</button>
+  </div>
+</div>

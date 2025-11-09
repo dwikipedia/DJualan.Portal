@@ -1,0 +1,156 @@
+<!-- src/app/app.component.html -->
+<div class="app-container">
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <!-- Logo Section -->
+      <div class="nav-section logo-section">
+        <a routerLink="/" class="logo-link">
+          <div class="logo">
+            <span class="logo-icon">🛍️</span>
+            <span class="logo-text">DJualan</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Search Section -->
+      <div class="nav-section search-section" *ngIf="isLoggedIn">
+        <div class="search-container">
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search products..."
+            #searchInput
+            (keyup.enter)="onSearch(searchInput.value)"
+          >
+          <button class="search-btn" (click)="onSearch(searchInput.value)">
+            <span class="search-icon">🔍</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Section -->
+      <div class="nav-section user-section">
+        <div class="user-menu" *ngIf="isLoggedIn; else loginSection">
+          <div class="user-greeting">
+            <span class="greeting-text">Hello, {{getUserName()}}</span>
+          </div>
+          
+          <div class="dropdown-container">
+            <button class="account-btn">
+              <span class="account-text">Account & Lists</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-section">
+                <h4>Your Account</h4>
+                <a href="#" class="dropdown-item">Your Profile</a>
+                <a href="#" class="dropdown-item">Your Orders</a>
+                <a href="#" class="dropdown-item">Your Wish List</a>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-section">
+                <button class="dropdown-item logout-btn" (click)="logout()">
+                  <span class="logout-icon">🚪</span>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <a routerLink="/products" class="nav-link">
+            <div class="nav-item">
+              <span class="item-label">Products</span>
+            </div>
+          </a>
+
+          <div class="cart-container">
+            <a href="#" class="nav-link">
+              <div class="nav-item cart-item">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count">0</span>
+                <span class="item-label">Cart</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <ng-template #loginSection>
+          <a routerLink="/login" class="nav-link">
+            <div class="nav-item">
+              <span class="item-label">Sign In</span>
+            </div>
+          </a>
+        </ng-template>
+      </div>
+    </div>
+  </header>
+
+  <!-- Secondary Navigation -->
+  <nav class="secondary-nav" *ngIf="isLoggedIn">
+    <div class="nav-container">
+      <div class="nav-links">
+        <a routerLink="/products" class="nav-link secondary-link">
+          <span>All Products</span>
+        </a>
+        <a href="#" class="nav-link secondary-link">
+          <span>Today's Deals</span>
+        </a>
+        <a href="#" class="nav-link secondary-link">
+          <span>Customer Service</span>
+        </a>
+        <a href="#" class="nav-link secondary-link">
+          <span>Gift Cards</span>
+        </a>
+        <a href="#" class="nav-link secondary-link">
+          <span>Registry</span>
+        </a>
+        <a href="#" class="nav-link secondary-link">
+          <span>Sell</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Get to Know Us</h4>
+        <a href="#">Careers</a>
+        <a href="#">Blog</a>
+        <a href="#">About DJualan</a>
+        <a href="#">Investor Relations</a>
+      </div>
+      <div class="footer-section">
+        <h4>Make Money with Us</h4>
+        <a href="#">Sell products on DJualan</a>
+        <a href="#">Sell on DJualan Business</a>
+        <a href="#">Become an Affiliate</a>
+      </div>
+      <div class="footer-section">
+        <h4>DJualan Payment Products</h4>
+        <a href="#">DJualan Business Card</a>
+        <a href="#">Shop with Points</a>
+        <a href="#">Reload Your Balance</a>
+      </div>
+      <div class="footer-section">
+        <h4>Let Us Help You</h4>
+        <a href="#">DJualan and COVID-19</a>
+        <a href="#">Your Account</a>
+        <a href="#">Your Orders</a>
+        <a href="#">Shipping Rates & Policies</a>
+        <a href="#">Returns & Replacements</a>
+        <a href="#">Help</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 DJualan. All rights reserved.</p>
+    </div>
+  </footer>
+</div>

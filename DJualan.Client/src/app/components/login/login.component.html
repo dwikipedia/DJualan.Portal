@@ -1,0 +1,127 @@
+<!-- src/app/components/login/login.component.html -->
+<div class="login-container">
+  <div class="login-background">
+    <div class="background-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
+
+  <div class="login-content">
+    <div class="login-card">
+      <!-- Header -->
+      <div class="login-header">
+        <div class="logo">
+          <div class="logo-icon">🛍️</div>
+          <h1>DJualan</h1>
+        </div>
+        <p class="welcome-text">Welcome back! Please sign in to your account.</p>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Username Field -->
+        <div class="form-group">
+          <label for="username" class="form-label">
+            <span class="label-icon">👤</span>
+            Username
+          </label>
+          <div class="input-container">
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              placeholder="Enter your username"
+              [class.error]="username?.invalid && username?.touched"
+              class="form-input"
+            >
+            <div class="input-icon">
+              <span *ngIf="username?.valid && username?.touched" class="success-icon">✓</span>
+            </div>
+          </div>
+          <div *ngIf="username?.invalid && username?.touched" class="error-message">
+            <span *ngIf="username?.errors?.['required']">Username is required</span>
+            <span *ngIf="username?.errors?.['minlength']">Username must be at least 3 characters</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <span class="label-icon">🔒</span>
+            Password
+          </label>
+          <div class="input-container">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Enter your password"
+              [class.error]="password?.invalid && password?.touched"
+              class="form-input"
+            >
+            <div class="input-icon">
+              <button 
+                type="button" 
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                tabindex="-1"
+              >
+                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
+          </div>
+          <div *ngIf="password?.invalid && password?.touched" class="error-message">
+            <span *ngIf="password?.errors?.['required']">Password is required</span>
+            <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="alert alert-error">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <strong>Login Failed</strong>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="login-btn"
+          [disabled]="loginForm.invalid || loading"
+          [class.loading]="loading"
+        >
+          <span *ngIf="!loading">Sign In</span>
+          <span *ngIf="loading" class="loading-spinner"></span>
+        </button>
+      </form>
+
+      <!-- Demo Section -->
+      <div class="demo-section">
+        <div class="demo-header">
+          <div class="demo-icon">💡</div>
+          <h3>Demo Access</h3>
+        </div>
+        <div class="demo-credentials">
+          <div class="credential-item">
+            <strong>Username:</strong> 
+            <span class="credential-value">djadm</span>
+          </div>
+          <div class="credential-item">
+            <strong>Password:</strong> 
+            <span class="credential-value">admin123</span>
+          </div>
+        </div>
+        <p class="demo-note">Use these credentials to test the application</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p>Don't have an account? <a href="#" class="signup-link">Contact administrator</a></p>
+      </div>
+    </div>
+  </div>
+</div>

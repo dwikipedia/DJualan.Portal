@@ -1,0 +1,50 @@
+// src/app/app.component.ts
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, RouterOutlet, Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterModule],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements OnInit {
+  title = 'DJualan.Client';
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  getUserName(): string {
+    // You can enhance this to get actual user name from your auth service
+    return 'User';
+  }
+
+  onSearch(searchTerm: string): void {
+    if (searchTerm.trim()) {
+      console.log('Searching for:', searchTerm);
+      // Implement search functionality
+      // this.router.navigate(['/search'], { queryParams: { q: searchTerm } });
+    }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  ngOnInit(): void {
+    // Redirect to products if already logged in and on login page
+    if (this.authService.isLoggedIn() && this.router.url === '/') {
+      this.router.navigate(['/products']);
+    }
+  }
+}
