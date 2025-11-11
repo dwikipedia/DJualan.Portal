@@ -55,6 +55,37 @@ export class AuthService {
     return userInfo ? JSON.parse(userInfo) : null;
   }
 
+  getCurrentUser(): string {
+    const userInfo = this.getUserInfo();
+    if (userInfo) {
+      // Return first name if available, otherwise username
+      return userInfo.firstName || userInfo.username || 'User';
+    }
+    return 'User';
+  }
+
+  getFullName(): string {
+    const userInfo = this.getUserInfo();
+    if (userInfo && userInfo.firstName && userInfo.lastName) {
+      return `${userInfo.firstName} ${userInfo.lastName}`;
+    } else if (userInfo && userInfo.firstName) {
+      return userInfo.firstName;
+    } else if (userInfo && userInfo.username) {
+      return userInfo.username;
+    }
+    return 'User';
+  }
+
+   getUserRoles(): string[] {
+    const userInfo = this.getUserInfo();
+    return userInfo?.roles || [];
+  }
+
+  hasRole(role: string): boolean {
+    const roles = this.getUserRoles();
+    return roles.includes(role);
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }

@@ -1,22 +1,27 @@
-// src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { ProductListComponent } from './components/product-list/product-list.component';
 import { LoginComponent } from './components/login/login.component';
-import { authGuard } from './guards/auth.guard';
+import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  {
-    path: 'products',
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent,
+    canActivate: [authGuard]  // Make sure this is here
+  },
+  { 
+    path: 'products', 
     component: ProductListComponent,
-    canActivate: [authGuard], // Protect this route
+    canActivate: [authGuard]
   },
-  {
-    path: 'products/:id',
+  { 
+    path: 'products/:id', 
     component: ProductDetailComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard]
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: '' }
 ];

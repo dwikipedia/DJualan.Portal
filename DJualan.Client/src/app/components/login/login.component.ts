@@ -30,9 +30,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // If already logged in, redirect to products
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/products']);
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -47,7 +46,8 @@ export class LoginComponent implements OnInit {
         next: (response) => {
           this.loading = false;
           console.log('Login successful:', response);
-          this.router.navigate(['/products']);
+          console.log('User info stored:', this.authService.getUserInfo());
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           this.loading = false;

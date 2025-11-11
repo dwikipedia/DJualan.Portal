@@ -1,0 +1,166 @@
+<!-- src/app/components/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>Dashboard Overview</h1>
+    <p>Welcome to your DJualan store management dashboard</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Failed to Load Dashboard</h3>
+    <p>{{ error }}</p>
+    <button (click)="loadDashboardStats()" class="btn btn-primary">Retry</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error" class="dashboard-content">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <!-- Total Products Card -->
+      <div class="stat-card">
+        <div class="stat-icon product-icon">
+          <span>📦</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ formatNumber(stats.totalProducts) }}</h3>
+          <p class="stat-label">Total Products</p>
+          <div class="stat-trend positive">
+            <span class="trend-icon">↗️</span>
+            <span class="trend-text">Active in store</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Sales Card -->
+      <div class="stat-card">
+        <div class="stat-icon sales-icon">
+          <span>💰</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ formatNumber(stats.totalSales) }}</h3>
+          <p class="stat-label">Total Sales</p>
+          <div class="stat-trend positive">
+            <span class="trend-icon">↗️</span>
+            <span class="trend-text">+{{ getSalesGrowth() }}% this month</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Card -->
+      <div class="stat-card">
+        <div class="stat-icon revenue-icon">
+          <span>📊</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ formatPrice(stats.totalRevenue) }}</h3>
+          <p class="stat-label">Total Revenue</p>
+          <div class="stat-trend positive">
+            <span class="trend-icon">↗️</span>
+            <span class="trend-text">+{{ getRevenueGrowth() }}% growth</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Alert Card -->
+      <div class="stat-card">
+        <div class="stat-icon alert-icon">
+          <span>⚠️</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ formatNumber(stats.lowStockItems) }}</h3>
+          <p class="stat-label">Low Stock Items</p>
+          <div class="stat-trend negative" *ngIf="stats.lowStockItems > 0">
+            <span class="trend-icon">🔻</span>
+            <span class="trend-text">Needs attention</span>
+          </div>
+          <div class="stat-trend positive" *ngIf="stats.lowStockItems === 0">
+            <span class="trend-icon">✅</span>
+            <span class="trend-text">All items stocked</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="recent-activity-section">
+      <div class="section-header">
+        <h2>Recent Products</h2>
+        <a routerLink="/products" class="view-all-link">View All Products →</a>
+      </div>
+
+      <div class="recent-products-grid">
+        <div *ngFor="let product of stats.recentProducts" class="recent-product-card">
+          <div class="product-image">
+            <img [src]="product.imageUrl" [alt]="product.name" 
+                 (error)="product.imageUrl = 'https://via.placeholder.com/80x80/0078D4/ffffff?text=No+Image'">
+          </div>
+          <div class="product-details">
+            <h4 class="product-name">{{ product.name }}</h4>
+            <p class="product-category">{{ product.category }}</p>
+            <div class="product-meta">
+              <span class="product-price">{{ product.priceInRp || formatPrice(product.price) }}</span>
+              <span class="product-stock" [class]="product.stock <= 10 ? 'low-stock' : 'in-stock'">
+                Stock: {{ product.stock }}
+              </span>
+            </div>
+            <div class="product-date">
+              Added: {{ formatDate(product.createdAt) }}
+            </div>
+          </div>
+          <div class="product-actions">
+            <a [routerLink]="['/products', product.id]" class="btn btn-secondary btn-small">
+              View
+            </a>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="stats.recentProducts.length === 0" class="empty-recent">
+          <div class="empty-icon">📦</div>
+          <p>No products added yet</p>
+          <a routerLink="/products" class="btn btn-primary">Add Your First Product</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+      <div class="section-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="actions-grid">
+        <a routerLink="/products" class="action-card">
+          <div class="action-icon">📦</div>
+          <h3>Manage Products</h3>
+          <p>View, add, or edit products in your store</p>
+        </a>
+        
+        <a href="#" class="action-card" (click)="$event.preventDefault()">
+          <div class="action-icon">📊</div>
+          <h3>View Analytics</h3>
+          <p>Detailed sales and performance reports</p>
+        </a>
+        
+        <a href="#" class="action-card" (click)="$event.preventDefault()">
+          <div class="action-icon">⚙️</div>
+          <h3>Store Settings</h3>
+          <p>Configure your store preferences</p>
+        </a>
+        
+        <a href="#" class="action-card" (click)="$event.preventDefault()">
+          <div class="action-icon">👥</div>
+          <h3>Customer Management</h3>
+          <p>Manage customer information and orders</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

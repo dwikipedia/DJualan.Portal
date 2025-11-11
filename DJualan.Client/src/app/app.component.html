@@ -37,7 +37,7 @@
           </div>
           
           <div class="dropdown-container">
-            <button class="account-btn">
+            <button class="account-btn dropdown-trigger">
               <span class="account-text">Account & Lists</span>
               <span class="dropdown-arrow">▼</span>
             </button>
@@ -90,9 +90,54 @@
   <nav class="secondary-nav" *ngIf="isLoggedIn">
     <div class="nav-container">
       <div class="nav-links">
-        <a routerLink="/products" class="nav-link secondary-link">
-          <span>All Products</span>
-        </a>
+       <a routerLink="/dashboard" 
+         class="nav-link secondary-link" 
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: true }">
+        <span>Dashboard</span>
+      </a>
+        
+      <!-- Manage Products Dropdown -->
+        <div class="dropdown-container nav-dropdown">
+          <button class="nav-link secondary-link dropdown-trigger">
+            <span>Manage Products</span>
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          <div class="dropdown-menu products-dropdown">
+            <div class="dropdown-section">
+              <h4>Product Management</h4>
+              <a routerLink="/products" class="dropdown-item" routerLinkActive="active">
+                <span class="item-icon">📦</span>
+                View All Products
+              </a>
+              <a routerLink="/products/add" class="dropdown-item">
+                <span class="item-icon">➕</span>
+                Add New Product
+              </a>
+              <a href="#" class="dropdown-item" (click)="$event.preventDefault()">
+                <span class="item-icon">📊</span>
+                Product Categories
+              </a>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-section">
+              <h4>Quick Actions</h4>
+              <a href="#" class="dropdown-item" (click)="$event.preventDefault()">
+                <span class="item-icon">📋</span>
+                Inventory Report
+              </a>
+              <a href="#" class="dropdown-item" (click)="$event.preventDefault()">
+                <span class="item-icon">🏷️</span>
+                Bulk Update Prices
+              </a>
+              <a href="#" class="dropdown-item" (click)="$event.preventDefault()">
+                <span class="item-icon">📤</span>
+                Export Products
+              </a>
+            </div>
+          </div>
+        </div>
+
         <a href="#" class="nav-link secondary-link">
           <span>Today's Deals</span>
         </a>
