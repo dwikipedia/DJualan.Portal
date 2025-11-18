@@ -45,14 +45,23 @@
         </div>
         
         <div class="product-actions">
-          <button class="btn-primary" 
+          <!-- <button class="btn-primary" 
                   [disabled]="product.stock === 0 || !product.isActive">
             {{ product.stock === 0 ? 'Out of Stock' : 'Add to Cart' }}
-          </button>
-          <!-- Make sure this is a button with routerLink -->
-          <button class="btn-secondary" [routerLink]="['/products', product.id]">
-            View Details
-          </button>
+          </button> -->
+    
+          <a [routerLink]="['/products', product.id]" class="btn btn-secondary">
+            View
+          </a>
+
+           <div class="admin-actions" *ngIf="isLoggedIn">
+            <a [routerLink]="['/products/edit', product.id]" class="btn btn-edit">
+              <span class="btn-icon">✏️</span> Edit
+            </a>
+            <a [routerLink]="['/products/delete', product.id]" class="btn btn-delete">
+              <span class="btn-icon">🗑️</span> Delete
+            </a>
+          </div>
         </div>
 
       </div>

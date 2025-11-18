@@ -1,20 +1,15 @@
-// src/app/components/product-detail/product-detail.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
+import { UtilsService } from '../../services/utils.service';
 import { Product } from '../../models/product.model';
-import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [
-    CommonModule, 
-    RouterModule, 
-    ReactiveFormsModule
-  ],
+  imports: [CommonModule, RouterModule],
   templateUrl: './product-detail.component.html',
   styleUrls: ['./product-detail.component.scss']
 })
@@ -23,19 +18,14 @@ export class ProductDetailComponent implements OnInit {
   loading: boolean = true;
   error: string = '';
   selectedImage: string = '';
-  productForm: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private cartService: CartService,
-    private fb: FormBuilder
-  ) {
-    this.productForm = this.fb.group({
-      quantity: [1, [Validators.required, Validators.min(1)]]
-    });
-  }
+    private utilsService: UtilsService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadProduct();
@@ -54,16 +44,6 @@ export class ProductDetailComponent implements OnInit {
       next: (product) => {
         this.product = product;
         this.selectedImage = product.imageUrl;
-        
-        // Update form validators based on stock
-        const maxQuantity = product.stock;
-        this.quantityControl.setValidators([
-          Validators.required,
-          Validators.min(1),
-          Validators.max(maxQuantity)
-        ]);
-        this.quantityControl.updateValueAndValidity();
-        
         this.loading = false;
       },
       error: (error) => {
@@ -74,46 +54,16 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  // Getter for quantity control that ensures it's not null
-  get quantityControl(): FormControl {
-    return this.productForm.get('quantity') as FormControl;
-  }
-
-  get currentQuantity(): number {
-    return this.quantityControl.value || 1;
-  }
-
-  addToCart(): void {
-    if (this.productForm.valid && this.product) {
-      const quantity = this.quantityControl.value;
-      
-      alert(`Added ${quantity} ${this.product.name} to cart!`);
-      
-      // If you have a CartService, you would use:
-      // this.cartService.addToCart(this.product, quantity);
-    }
-  }
-
-  incrementQuantity(): void {
-    if (this.product) {
-      const current = this.currentQuantity;
-      const newQuantity = Math.min(current + 1, this.product.stock);
-      this.quantityControl.setValue(newQuantity);
-    }
-  }
-
-  decrementQuantity(): void {
-    const current = this.currentQuantity;
-    const newQuantity = Math.max(current - 1, 1);
-    this.quantityControl.setValue(newQuantity);
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
   }
 
   formatPrice(price: number): string {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(price);
+    return this.utilsService.formatPrice(price);
+  }
+
+  formatDate(dateString: string): string {
+    return this.utilsService.formatDate(dateString);
   }
 
   getStockStatus(): string {

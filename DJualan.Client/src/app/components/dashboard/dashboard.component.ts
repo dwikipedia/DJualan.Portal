@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { DashboardStats } from '../../models/stats.model';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,10 @@ export class DashboardComponent implements OnInit {
   loading: boolean = true;
   error: string = '';
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private utilsService: UtilsService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardStats();
@@ -46,15 +50,11 @@ export class DashboardComponent implements OnInit {
   }
 
   formatPrice(price: number): string {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(price);
+    return this.utilsService.formatPrice(price);
   }
 
   formatNumber(num: number): string {
-    return new Intl.NumberFormat('id-ID').format(num);
+    return this.utilsService.formatNumber(num);
   }
 
   getRevenueGrowth(): number {
@@ -69,11 +69,6 @@ export class DashboardComponent implements OnInit {
 
   // Add to dashboard.component.ts
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return this.utilsService.formatDate(dateString);
   }
 }

@@ -12,10 +12,23 @@
   --azure-text-light: #605E5C;
   --azure-border: #D2D0CE;
   --azure-success: #107C10;
+  --azure-success-light: #e7f4e4;
+  --azure-success-dark: #0d5e0d;
   --azure-warning: #D83B01;
+  --azure-warning-light: #fff3e0;
+  --azure-warning-dark: #b32d01;
   --azure-error: #D13438;
+  --azure-error-light: #ffebee;
+  --azure-error-dark: #a4262c;
   --azure-gradient: linear-gradient(135deg, #0078D4 0%, #00BCF2 100%);
   --azure-gradient-light: linear-gradient(135deg, #50B0F0 0%, #6BDAFF 100%);
+  --azure-edit: #0078D4;       
+  --azure-edit-dark: #106EBE;  
+  --azure-edit-light: #50B0F0; 
+  --azure-delete: #D13438;     
+  --azure-delete-dark: #A4262C;
+  --azure-warning: #D83B01; 
+  --azure-warning-dark: #B32D01;
 }
 
 * {

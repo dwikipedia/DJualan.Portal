@@ -74,10 +74,10 @@ export class ProductService {
       );
   }
 
+  // src/app/services/product.service.ts - ensure these methods exist
   // Create new product
   createProduct(product: Product): Observable<Product> {
     if (!this.authService.isLoggedIn()) {
-      console.warn('User not logged in. Cannot create product.');
       return throwError(() => new Error('User not authenticated'));
     }
 
@@ -96,7 +96,6 @@ export class ProductService {
   // Update product
   updateProduct(id: number, product: Product): Observable<Product> {
     if (!this.authService.isLoggedIn()) {
-      console.warn('User not logged in. Cannot update product.');
       return throwError(() => new Error('User not authenticated'));
     }
 
@@ -115,7 +114,6 @@ export class ProductService {
   // Delete product
   deleteProduct(id: number): Observable<void> {
     if (!this.authService.isLoggedIn()) {
-      console.warn('User not logged in. Cannot delete product.');
       return throwError(() => new Error('User not authenticated'));
     }
 

@@ -1,6 +1,8 @@
 <div class="product-detail-container">
   <!-- Breadcrumb -->
   <nav class="breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">Dashboard</a>
+    <span class="breadcrumb-separator">›</span>
     <a routerLink="/products" class="breadcrumb-link">Products</a>
     <span class="breadcrumb-separator">›</span>
     <span class="breadcrumb-current" *ngIf="product">{{ product.name }}</span>
@@ -22,11 +24,42 @@
 
   <!-- Product Detail -->
   <div *ngIf="product && !loading" class="product-detail">
+    <!-- Admin Actions Header -->
+    <div class="admin-actions-header" *ngIf="isLoggedIn">
+      <div class="admin-buttons">
+        <a [routerLink]="['/products/edit', product.id]" class="btn btn-edit">
+          <span class="btn-icon">✏️</span>
+          Edit Product
+        </a>
+        <a [routerLink]="['/products/delete', product.id]" class="btn btn-delete">
+          <span class="btn-icon">🗑️</span>
+          Delete Product
+        </a>
+      </div>
+      <div class="product-meta-info">
+        <span class="meta-item">
+          <strong>ID:</strong> {{ product.id }}
+        </span>
+        <span class="meta-item">
+          <strong>Created:</strong> {{ formatDate(product.createdAt) }}
+        </span>
+        <span class="meta-item">
+          <strong>Updated:</strong> {{ formatDate(product.updatedAt) }}
+        </span>
+        <span class="meta-item status" [class]="product.isActive ? 'active' : 'inactive'">
+          <strong>Status:</strong> {{ product.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+    </div>
+
     <div class="product-layout">
       <!-- Image Gallery -->
       <div class="image-section">
         <div class="main-image">
           <img [src]="selectedImage" [alt]="product.name" (error)="selectedImage = 'https://via.placeholder.com/500x500/0078D4/ffffff?text=No+Image'">
+          <div *ngIf="!product.isActive" class="inactive-overlay">
+            <span class="inactive-text">Product Inactive</span>
+          </div>
         </div>
         <div class="image-thumbnails" *ngIf="product.imageUrl">
           <div class="thumbnail" 
@@ -39,7 +72,10 @@
 
       <!-- Product Info -->
       <div class="info-section">
-        <h1 class="product-title">{{ product.name }}</h1>
+        <div class="product-header">
+          <h1 class="product-title">{{ product.name }}</h1>
+          <span class="product-category-badge">{{ product.category }}</span>
+        </div>
         
         <div class="product-rating">
           <div class="stars">
@@ -64,6 +100,7 @@
           <span class="stock-status" [class]="getStockStatusClass()">
             {{ getStockStatus() }}
           </span>
+          <span class="stock-quantity">({{ product.stock }} units available)</span>
         </div>
 
         <div class="product-description">
@@ -81,54 +118,28 @@
           </ul>
         </div>
 
-        <!-- Add to Cart Section -->
-        <div class="purchase-section" *ngIf="product.stock > 0 && product.isActive">
-          <div class="quantity-selector">
-            <label for="quantity">Quantity:</label>
-            <div class="quantity-controls">
-              <button (click)="decrementQuantity()" 
-                      [disabled]="currentQuantity <= 1" 
-                      class="quantity-btn">-</button>
-              <input 
-                type="number" 
-                id="quantity"
-                [formControl]="quantityControl"
-                min="1" 
-                [max]="product.stock"
-                class="quantity-input"
-              >
-              <button (click)="incrementQuantity()" 
-                      [disabled]="currentQuantity >= product.stock" 
-                      class="quantity-btn">+</button>
-            </div>
-            <div *ngIf="quantityControl.invalid && quantityControl.touched" class="error-message">
-              <span *ngIf="quantityControl.errors?.['min']">Quantity must be at least 1</span>
-              <span *ngIf="quantityControl.errors?.['max']">Quantity cannot exceed available stock</span>
-            </div>
-          </div>
-
-          <div class="action-buttons">
-            <button (click)="addToCart()" 
-                    [disabled]="!productForm.valid"
-                    class="btn btn-primary btn-large">
-              <span class="btn-icon">🛒</span>
-              Add to Cart
-            </button>
-            <button class="btn btn-secondary btn-large">
-              <span class="btn-icon">❤️</span>
-              Add to Wishlist
-            </button>
-          </div>
-        </div>
-
+        <!-- Out of Stock Section -->
         <div *ngIf="product.stock === 0 || !product.isActive" class="out-of-stock-section">
-          <p class="out-of-stock-message">This product is currently unavailable</p>
-          <button (click)="goBack()" class="btn btn-secondary">Continue Shopping</button>
+          <div class="out-of-stock-content">
+            <div class="out-of-stock-icon">😔</div>
+            <div>
+              <p class="out-of-stock-message">
+                {{ !product.isActive ? 'This product is currently inactive.' : 'This product is currently out of stock.' }}
+              </p>
+              <p class="out-of-stock-suggestion">
+                {{ !product.isActive ? 'Please contact the administrator for more information.' : 'Check back later or browse similar products.' }}
+              </p>
+            </div>
+          </div>
+          <div class="out-of-stock-actions">
+            <button (click)="goBack()" class="btn btn-secondary">Continue Shopping</button>
+            <a routerLink="/products" class="btn btn-primary">Browse Products</a>
+          </div>
         </div>
       </div>
 
-      <!-- Purchase Card -->
-      <div class="purchase-card" *ngIf="product.stock > 0 && product.isActive">
+      <!-- Product Info Card -->
+      <div class="product-info-card">
         <div class="card-content">
           <div class="price-card">
             <span class="price">{{ product.priceInRp || formatPrice(product.price) }}</span>
@@ -140,30 +151,6 @@
 
           <div class="stock-status-card" [class]="getStockStatusClass()">
             {{ getStockStatus() }}
-          </div>
-
-          <div class="quantity-card">
-            <label>Quantity:</label>
-            <div class="quantity-controls-small">
-              <button (click)="decrementQuantity()" 
-                      [disabled]="currentQuantity <= 1" 
-                      class="quantity-btn">-</button>
-              <span class="quantity-display">{{ currentQuantity }}</span>
-              <button (click)="incrementQuantity()" 
-                      [disabled]="currentQuantity >= product.stock" 
-                      class="quantity-btn">+</button>
-            </div>
-          </div>
-
-          <div class="action-buttons-card">
-            <button (click)="addToCart()" 
-                    [disabled]="!productForm.valid"
-                    class="btn btn-primary btn-full">
-              Add to Cart
-            </button>
-            <button class="btn btn-secondary btn-full">
-              Buy Now
-            </button>
           </div>
 
           <div class="security-info">
@@ -179,6 +166,47 @@
             </div>
             <div class="shipping-option">
               <strong>Shipping:</strong> FREE
+            </div>
+            <div class="shipping-option">
+              <strong>Returns:</strong> 30 days
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Product Information -->
+    <div class="additional-info" *ngIf="isLoggedIn">
+      <div class="info-section">
+        <h3>Product Management</h3>
+        <div class="management-grid">
+          <div class="management-card">
+            <h4>Inventory</h4>
+            <p><strong>Current Stock:</strong> {{ product.stock }} units</p>
+            <p><strong>Status:</strong> 
+              <span [class]="product.isActive ? 'status-active' : 'status-inactive'">
+                {{ product.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </p>
+            <button class="btn btn-outline btn-small">Update Stock</button>
+          </div>
+          <div class="management-card">
+            <h4>Sales</h4>
+            <p><strong>Price:</strong> {{ formatPrice(product.price) }}</p>
+            <p><strong>Category:</strong> {{ product.category }}</p>
+            <button class="btn btn-outline btn-small">View Analytics</button>
+          </div>
+          <div class="management-card">
+            <h4>Quick Actions</h4>
+            <div class="quick-action-buttons">
+              <a [routerLink]="['/products/edit', product.id]" class="btn btn-edit btn-small">
+                <span class="btn-icon">✏️</span>
+                Edit Product
+              </a>
+              <a [routerLink]="['/products/delete', product.id]" class="btn btn-delete btn-small">
+                <span class="btn-icon">🗑️</span>
+                Delete Product
+              </a>
             </div>
           </div>
         </div>

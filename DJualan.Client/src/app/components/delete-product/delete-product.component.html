@@ -1,0 +1,74 @@
+<div class="delete-product-container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">Dashboard</a>
+    <span class="breadcrumb-separator">›</span>
+    <a routerLink="/products" class="breadcrumb-link">Products</a>
+    <span class="breadcrumb-separator">›</span>
+    <a [routerLink]="['/products', productId]" class="breadcrumb-link">Product Details</a>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">Delete Product</span>
+  </nav>
+
+  <div class="delete-card">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading product details...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error && !loading" class="alert alert-error">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <strong>Error</strong>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div *ngIf="product && !loading" class="confirmation-section">
+      <div class="warning-icon">⚠️</div>
+      
+      <div class="confirmation-content">
+        <h1>Delete Product</h1>
+        <p class="warning-text">
+          You are about to delete the following product. This action cannot be undone.
+        </p>
+
+        <div class="product-preview">
+          <div class="product-image">
+            <img [src]="product.imageUrl" [alt]="product.name" 
+                 (error)="product.imageUrl = 'https://via.placeholder.com/100x100/0078D4/ffffff?text=No+Image'">
+          </div>
+          <div class="product-details">
+            <h3>{{ product.name }}</h3>
+            <p class="product-category">{{ product.category }}</p>
+            <p class="product-price">{{ product.priceInRp || (product.price | currency:'IDR':'symbol':'1.0-0') }}</p>
+            <p class="product-stock">Stock: {{ product.stock }}</p>
+          </div>
+        </div>
+
+        <div class="confirmation-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onCancel()"
+            [disabled]="deleting"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="onDelete()"
+            [disabled]="deleting"
+          >
+            <span *ngIf="!deleting">Delete Product</span>
+            <span *ngIf="deleting" class="loading-spinner"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

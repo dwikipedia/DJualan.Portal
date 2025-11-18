@@ -1,0 +1,180 @@
+<div class="edit-product-container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/dashboard" class="breadcrumb-link">Dashboard</a>
+    <span class="breadcrumb-separator">›</span>
+    <a routerLink="/products" class="breadcrumb-link">Products</a>
+    <span class="breadcrumb-separator">›</span>
+    <a [routerLink]="['/products', productId]" class="breadcrumb-link">Product Details</a>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">Edit Product</span>
+  </nav>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h1>Edit Product</h1>
+      <p>Update the product information below</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loadingProduct" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading product details...</p>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="success" class="alert alert-success">
+      <div class="alert-icon">✅</div>
+      <div class="alert-content">
+        <strong>Product updated successfully!</strong>
+        <p>Redirecting to product details...</p>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error && !loadingProduct" class="alert alert-error">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <strong>Error</strong>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+
+    <form *ngIf="!loadingProduct" [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+      <!-- Product Name -->
+      <div class="form-group">
+        <label for="name" class="form-label">Product Name *</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          class="form-input"
+          [class.error]="name?.invalid && name?.touched"
+          placeholder="Enter product name"
+        >
+        <div *ngIf="name?.invalid && name?.touched" class="error-message">
+          <span *ngIf="name?.errors?.['required']">Product name is required</span>
+          <span *ngIf="name?.errors?.['minlength']">Name must be at least 3 characters</span>
+          <span *ngIf="name?.errors?.['maxlength']">Name cannot exceed 100 characters</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description" class="form-label">Description *</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          class="form-textarea"
+          [class.error]="description?.invalid && description?.touched"
+          placeholder="Enter product description"
+          rows="4"
+        ></textarea>
+        <div *ngIf="description?.invalid && description?.touched" class="error-message">
+          <span *ngIf="description?.errors?.['required']">Description is required</span>
+          <span *ngIf="description?.errors?.['minlength']">Description must be at least 10 characters</span>
+          <span *ngIf="description?.errors?.['maxlength']">Description cannot exceed 500 characters</span>
+        </div>
+      </div>
+
+      <!-- Price and Stock -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="price" class="form-label">Price (IDR) *</label>
+          <input
+            type="number"
+            id="price"
+            formControlName="price"
+            class="form-input"
+            [class.error]="price?.invalid && price?.touched"
+            placeholder="0"
+            min="0"
+          >
+          <div *ngIf="price?.invalid && price?.touched" class="error-message">
+            <span *ngIf="price?.errors?.['required']">Price is required</span>
+            <span *ngIf="price?.errors?.['min']">Price must be positive</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="stock" class="form-label">Stock Quantity *</label>
+          <input
+            type="number"
+            id="stock"
+            formControlName="stock"
+            class="form-input"
+            [class.error]="stock?.invalid && stock?.touched"
+            placeholder="0"
+            min="0"
+          >
+          <div *ngIf="stock?.invalid && stock?.touched" class="error-message">
+            <span *ngIf="stock?.errors?.['required']">Stock is required</span>
+            <span *ngIf="stock?.errors?.['min']">Stock cannot be negative</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category" class="form-label">Category *</label>
+        <select
+          id="category"
+          formControlName="category"
+          class="form-select"
+          [class.error]="category?.invalid && category?.touched"
+        >
+          <option value="">Select a category</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+        <div *ngIf="category?.invalid && category?.touched" class="error-message">
+          <span *ngIf="category?.errors?.['required']">Category is required</span>
+        </div>
+      </div>
+
+      <!-- Image URL -->
+      <div class="form-group">
+        <label for="imageUrl" class="form-label">Image URL</label>
+        <input
+          type="url"
+          id="imageUrl"
+          formControlName="imageUrl"
+          class="form-input"
+          [class.error]="imageUrl?.invalid && imageUrl?.touched"
+          placeholder="https://example.com/image.jpg"
+        >
+        <div *ngIf="imageUrl?.invalid && imageUrl?.touched" class="error-message">
+          <span *ngIf="imageUrl?.errors?.['pattern']">Please enter a valid URL</span>
+        </div>
+      </div>
+
+      <!-- Active Status -->
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="isActive" class="checkbox">
+          <span class="checkmark"></span>
+          Product is active and visible to customers
+        </label>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="onCancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="productForm.invalid || loading"
+        >
+          <span *ngIf="!loading">Update Product</span>
+          <span *ngIf="loading" class="loading-spinner"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
